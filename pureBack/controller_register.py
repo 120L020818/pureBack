@@ -24,7 +24,7 @@ def register_format(request):
 def register_email(request):
 
     from_addr = '565852435@qq.com'
-    password='xlcsnkyzudebbcfe'
+    password='gplblhngalnybfhe'
 
     req=json.loads(request.body)
     to_addr=req['email']
