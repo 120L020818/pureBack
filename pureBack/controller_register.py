@@ -5,19 +5,38 @@ from email.header import Header
 import random
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
+from vuedata.models import userTable
 @csrf_exempt
 def register_format(request):
     req = json.loads(request.body)
-    to_addr = req['email']
+    to_addr1 = req['username']
+    to_addr2 = req['sex']
+    to_addr3 = req['password']
+    to_addr4 = req['birthday']
+    to_addr5 = req['phone']
+    to_addr6 = req['email']
     print(req)
-    if True:
+    flag = 0
+    li = list(userTable.objects.filter(UserName=to_addr1))
+
+    print(li)
+    if len(li)>0:
+        flag=1
+    for i in li:
+        print(i.UserName)
+    if flag==0:
+        data=userTable(UserName=to_addr1,Sex=to_addr2,Password=to_addr3,Birthday=to_addr4,Phone=to_addr5,Email=to_addr6)
+        data.save()
+
+    if flag==0:
         return JsonResponse({
             "success": True,
+            "hasB4": False
         })
     else:
         return JsonResponse({
             "success": False,
+            "hasB4": True
         })
 
 @csrf_exempt
