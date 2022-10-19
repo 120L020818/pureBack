@@ -21,3 +21,6 @@ def request_controller(request):
             "success": False,
         })
 
+
+def publickey_receiver(request):
+    print("success")

@@ -1,11 +1,19 @@
 import json
 import smtplib
+import sys
 from email.mime.text import MIMEText
 from email.header import Header
 import random
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from vuedata.models import userTable
+from loguru import logger
+
+logger.remove()  # 这里是不让他重复打印
+logger.add(sys.stderr,  # 这里是不让他重复打印
+           level="INFO"
+           )
+
 @csrf_exempt
 def register_format(request):
     req = json.loads(request.body)
@@ -28,12 +36,16 @@ def register_format(request):
         data=userTable(UserName=to_addr1,Sex=to_addr2,Password=to_addr3,Birthday=to_addr4,Phone=to_addr5,Email=to_addr6)
         data.save()
 
+
+    logger.add('user.log', encoding='utf-8')
     if flag==0:
+        logger.info(f'[注册]:{to_addr1}')
         return JsonResponse({
             "success": True,
             "hasB4": False
         })
     else:
+        logger.info(f'[注册失败]:')
         return JsonResponse({
             "success": False,
             "hasB4": True
