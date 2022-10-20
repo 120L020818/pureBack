@@ -19,12 +19,22 @@ from . import controller_register
 from . import controller_self
 from . import controller_request
 from . import controller_apply
+from . import controller_download
+from . import controller_isvalid
+from . import controller_cadelete
 
 urlpatterns = [
     # url(r'api/login', allpages.login_controller)
 
     url(r'api/dlgen', controller_apply.download_genrater),
     url(r'api/dlpro', controller_apply.download_protector),
+    url(r'api/apply', controller_apply.apply_controller),
+
+    url(r'api/cadelete',controller_cadelete.cadelete_controller),
+
+    url(r'api/download',controller_download.download_controller),
+
+    url(r'api/isvalid',controller_isvalid.isvalid_controller),
 
     url(r'api/login', controller_login.login_controller),
     url(r'api/logout', controller_login.login_out),

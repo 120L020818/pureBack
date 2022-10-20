@@ -8,6 +8,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from vuedata.models import userTable
 from loguru import logger
+import bcrypt
 
 logger.remove()  # 这里是不让他重复打印
 logger.add(sys.stderr,  # 这里是不让他重复打印
@@ -33,11 +34,15 @@ def register_format(request):
     for i in li:
         print(i.UserName)
     if flag==0:
-        data=userTable(UserName=to_addr1,Sex=to_addr2,Password=to_addr3,Birthday=to_addr4,Phone=to_addr5,Email=to_addr6)
+        salt=bcrypt.gensalt()
+        hashed=bcrypt.hashpw(to_addr3.encode(),salt)
+        print(f"salt:{salt}")
+        print(f"hashed:{hashed}")
+        data=userTable(UserName=to_addr1,Sex=to_addr2,Password=hashed,Birthday=to_addr4,Phone=to_addr5,Email=to_addr6,Salt=salt)
         data.save()
 
 
-    logger.add('user.log', encoding='utf-8')
+    logger.add('user.log', encoding='utf-8',format="{time}  |   {message}")
     if flag==0:
         logger.info(f'[注册]:{to_addr1}')
         return JsonResponse({

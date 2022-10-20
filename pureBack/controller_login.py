@@ -5,6 +5,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from vuedata.models import userTable
 from loguru import logger
+import bcrypt
+
 
 logger.remove()  # 这里是不让他重复打印
 logger.add(sys.stderr,  # 这里是不让他重复打印
@@ -20,7 +22,17 @@ def login_controller(request):
     li = list(userTable.objects.filter(UserName=username))
     flag = 0
     isAdmin = False
-    if li[0].Password == password:
+
+
+    nPassword=password.encode()
+    print(nPassword)
+    prePassword=li[0].Password
+    print(prePassword)
+    salt=li[0].Salt
+    print(bcrypt.hashpw(nPassword,salt))
+
+    if bcrypt.checkpw(nPassword,prePassword):
+        print("密码正确")
         flag = 1
     if username == "admin":
         isAdmin = True

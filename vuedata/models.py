@@ -4,12 +4,12 @@ from django.db import models
 
 class userTable(models.Model):
     UserName = models.CharField(max_length=32)
-    Password = models.CharField(max_length=32)
+    Password = models.BinaryField(max_length=64)
     Email = models.CharField(max_length=32)
     Sex = models.CharField(max_length=1)
     Birthday = models.DateField()
     Phone = models.CharField(max_length=32)
-    Salt = models.CharField(max_length=32)
+    Salt = models.BinaryField(max_length=32)
 
 class applyTable(models.Model):
     RegistrationNumber = models.CharField(max_length=32)
