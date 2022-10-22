@@ -6,19 +6,34 @@ from django.http import JsonResponse
 from vuedata.models import userTable
 from loguru import logger
 from django.http import FileResponse
+from vuedata.models import certTable, crlTable
+import django.utils.timezone as timezone
+
 
 def cadelete_controller(request):
     print("已收到cadelete页面的请求")
-    # req = json.loads(request.body)
-    # to_addr1 = req['username']
-    # to_addr2 = req['authority']
-    # to_addr3 = req['justiceID']
-    # to_addr4 = req['admin']
-    # to_addr5 = req['adminphone']
-    # to_addr6 = req['years']
-    # to_addr7 = req['publickey']
-    return JsonResponse({
-        "success": True,
-    })
+    req = json.loads(request.body)
+    ID = req['SerialNumber']
+    username = req['username']
+    print(ID)
+    origin = certTable.objects.filter(SerialNumber=ID)
+    li = list(origin)
+    flag = 0
+    if len(li) > 0:
+        flag = 1
+    if li[0].UserName != username:
+        flag = 0
+    if flag == 1:
+        target = li[0]
+        data = crlTable(SerialNumber=target.SerialNumber, Organization=target.Organization, RevokeTime=timezone.now())
+        origin.delete()
+        data.save()
 
-
+    if flag == 1:
+        return JsonResponse({
+            "success": True,
+        })
+    else:
+        return JsonResponse({
+            "success": False,
+        })

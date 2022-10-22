@@ -6,19 +6,18 @@ from django.http import JsonResponse
 from vuedata.models import userTable
 from loguru import logger
 from django.http import FileResponse
-
+from vuedata.models import certTable
 def download_controller(request):
     print("已收到download页面的请求")
-    # req = json.loads(request.body)
-    # to_addr1 = req['username']
-    # to_addr2 = req['authority']
-    # to_addr3 = req['justiceID']
-    # to_addr4 = req['admin']
-    # to_addr5 = req['adminphone']
-    # to_addr6 = req['years']
-    # to_addr7 = req['publickey']
-    return JsonResponse({
-        "success": True,
-    })
+    req = json.loads(request.body)
+    ID = req['SerialNumber']
+    li = list(certTable.objects.filter(SerialNumber=ID))
+    flag=0
+    if(len(li)>0):
+        flag=1
+    if flag==1:
+        f = open(ID+'.json', 'rb')
+        # logger.info(f'[下载生成器]:{username}')
+        return FileResponse(f)
 
 

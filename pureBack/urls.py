@@ -22,9 +22,19 @@ from . import controller_apply
 from . import controller_download
 from . import controller_isvalid
 from . import controller_cadelete
+from . import controller_admin
 
 urlpatterns = [
     # url(r'api/login', allpages.login_controller)
+
+    url(r'api/applyadmin', controller_admin.applyadmin_controller),
+    url(r'api/applypass', controller_admin.applyadminpass_controller),
+    url(r'api/applyrefuse', controller_admin.applyadminrefuse_controller),
+    url(r'api/isvalidlistadmin', controller_admin.isvalidlistadmin_controller),
+    url(r'api/isvalidadmin', controller_admin.isvalidadmin_controller),
+    url(r'api/deleteadmin', controller_admin.deleteadmin_controller),
+
+
 
     url(r'api/dlgen', controller_apply.download_genrater),
     url(r'api/dlpro', controller_apply.download_protector),
