@@ -7,14 +7,9 @@ import random
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from vuedata.models import userTable
-from loguru import logger
+from . import controller_logger
 import bcrypt
-
-logger.remove()  # 这里是不让他重复打印
-logger.add(sys.stderr,  # 这里是不让他重复打印
-           level="INFO"
-           )
-
+logger=controller_logger.logger
 @csrf_exempt
 def register_format(request):
     req = json.loads(request.body)
@@ -42,7 +37,7 @@ def register_format(request):
         data.save()
 
 
-    logger.add('user.log', encoding='utf-8',format="{time}  |   {message}")
+    # logger.add('user.log', encoding='utf-8',format="{time}  |   {message}")
     if flag==0:
         logger.info(f'[注册]:{to_addr1}')
         return JsonResponse({
