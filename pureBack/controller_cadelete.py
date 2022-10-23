@@ -8,6 +8,7 @@ from loguru import logger
 from django.http import FileResponse
 from vuedata.models import certTable, crlTable
 import django.utils.timezone as timezone
+from . import controller_logger
 
 
 def cadelete_controller(request):
@@ -21,8 +22,8 @@ def cadelete_controller(request):
     flag = 0
     if len(li) > 0:
         flag = 1
-    if li[0].UserName != username:
-        flag = 0
+        if li[0].UserName != username:
+            flag = 0
     if flag == 1:
         target = li[0]
         data = crlTable(SerialNumber=target.SerialNumber, Organization=target.Organization, RevokeTime=timezone.now())
@@ -30,6 +31,8 @@ def cadelete_controller(request):
         data.save()
 
     if flag == 1:
+        logger = controller_logger.logger2
+        logger.info(f'[撤销]:{username}')
         return JsonResponse({
             "success": True,
         })

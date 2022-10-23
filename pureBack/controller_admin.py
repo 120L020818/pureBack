@@ -18,6 +18,7 @@ import time,datetime
 from Crypto.Signature import PKCS1_v1_5
 
 from vuedata.models import applyTable, certTable, crlTable
+from . import controller_logger
 
 
 def generate_certificate(request):
@@ -28,16 +29,7 @@ def generate_certificate(request):
     target = li[0]
 
     User = target.UserName
-    # userpubk = target.PublicKey
-    # print(userpubk)
-    # li =userpubk.split(' ')
-    # userpubk = li[0] + ' ' + li[1] + ' ' + li[2] + '\n'
-    # userpubk += li[3] + '\n'
-    # userpubk += li[4] + '\n'
-    # userpubk += li[5] + '\n'
-    # userpubk += li[6] + '\n'
-    # userpubk += li[7] + ' ' + li[8] + ' ' + li[9]
-    #
+
     userpubk = RSA.import_key(target.PublicKey)
 
     print(type(target.StartTime))
@@ -96,6 +88,7 @@ def applyadmin_controller(request):
 
 def applyadminpass_controller(request):
     print("已收到applyadminpass请求")
+
     req = json.loads(request.body)
     ID = req['ID']
     origin = applyTable.objects.filter(RegistrationNumber=ID)
@@ -107,7 +100,7 @@ def applyadminpass_controller(request):
     li2 = list(origin2)
     if len(li2)>0:
         flag=1
-    target2 = li2[0]
+        target2 = li2[0]
 
     if flag==0:
         data = certTable(RegistrationNumber=target.RegistrationNumber, SerialNumber=target.SerialNumber,
@@ -118,6 +111,8 @@ def applyadminpass_controller(request):
         data.save()
         generate_certificate(request)
     origin.delete()
+    logger = controller_logger.logger2
+    logger.info(f'[通过]:admin')
     return JsonResponse({
         "success": True,
     })
@@ -135,6 +130,8 @@ def applyadminrefuse_controller(request):
     data = crlTable(SerialNumber=target.SerialNumber, Organization=target.Organization, RevokeTime=timezone.now())
     data.save()
     origin.delete()
+    logger = controller_logger.logger2
+    logger.info(f'[拒绝]:admin')
     return JsonResponse({
         "success": True,
     })
@@ -160,18 +157,6 @@ def isvalidlistadmin_controller(request):
         "data": data
     })
 
-
-def isvalidadmin_controller(request):
-    print("已收到isvalidadmin请求")
-    req = json.loads(request.body)
-    print(req)
-    ID = req['ID']
-    # print(req)
-    return JsonResponse({
-        "success": True,
-    })
-
-
 def deleteadmin_controller(request):
     print("已收到deleteadmin请求")
     req = json.loads(request.body)
@@ -190,6 +175,8 @@ def deleteadmin_controller(request):
         data.save()
 
     if flag == 1:
+        logger = controller_logger.logger2
+        logger.info(f'[撤销]:admin    {target.SerialNumber}')
         return JsonResponse({
             "success": True,
         })

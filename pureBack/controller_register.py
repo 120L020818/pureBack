@@ -34,8 +34,8 @@ def register_format(request):
     if flag == 0:
         salt = bcrypt.gensalt()
         hashed = bcrypt.hashpw(to_addr3.encode(), salt)
-        print(f"salt:{salt}")
-        print(f"hashed:{hashed}")
+        # print(f"salt:{salt}")
+        # print(f"hashed:{hashed}")
         data = userTable(UserName=to_addr1, Sex=to_addr2, Password=hashed, Birthday=to_addr4, Phone=to_addr5,
                          Email=to_addr6, Salt=salt)
         data.save()

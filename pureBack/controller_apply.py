@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from loguru import logger
 from django.http import FileResponse
 from vuedata.models import applyTable
+from . import controller_logger
 
 import base64
 import json
@@ -65,6 +66,8 @@ def apply_controller(request):
     target.save()
 
     print(req)
+    logger = controller_logger.logger2
+    logger.info(f'[申请]:{to_addr1}')
     return JsonResponse({
         "success": True,
     })
@@ -73,8 +76,10 @@ def download_genrater(request):
     print("success")
 
     req = json.loads(request.body)
-    # username = req['username']
+    username = req['username']
     f=open('generate.exe','rb')
+    logger = controller_logger.logger2
+    logger.info(f'[申请]:{username}')
     # logger.info(f'[下载生成器]:{username}')
     return FileResponse(f)
 
@@ -83,7 +88,8 @@ def download_protector(request):
     print("success")
 
     req = json.loads(request.body)
-    # username = req['username']
+    username = req['username']
     f = open('protect.exe', 'rb')
-    # logger.info(f'[下载加密器]:{username}')
+    logger = controller_logger.logger2
+    logger.info(f'[下载加密器]:{username}')
     return FileResponse(f)

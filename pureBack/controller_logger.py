@@ -2,9 +2,9 @@ import logging
 import sys
 
 
-def log():
+def log(name):
     # 1 - 配置日志记录器名称
-    logger = logging.getLogger('user')
+    logger = logging.getLogger(name)
 
     # 2-配置日志级别
     logger.setLevel(logging.DEBUG)
@@ -18,14 +18,16 @@ def log():
     logger.addHandler(sh)
 
     # 5 - 创建并添加handler - 文件
-    fh = logging.FileHandler('user.log')
+    fh = logging.FileHandler(name + '.log')
     fh.setFormatter(format)
     logger.addHandler(fh)
 
     # 6 - 提供对外获取logger
     return logger
 
-logger = log()
+
+logger = log('user')
+logger2 = log('operate')
 
 if __name__ == '__main__':
     logger.info('使用函数定义的log方法')

@@ -21,7 +21,7 @@ def login_controller(request):
 
     nPassword=password.encode()
     prePassword=li[0].Password
-    salt=li[0].Salt
+    # salt=li[0].Salt
 
     if bcrypt.checkpw(nPassword,prePassword):
         print("密码正确")

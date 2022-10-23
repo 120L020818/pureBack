@@ -31,7 +31,6 @@ urlpatterns = [
     url(r'api/applypass', controller_admin.applyadminpass_controller),
     url(r'api/applyrefuse', controller_admin.applyadminrefuse_controller),
     url(r'api/isvalidlistadmin', controller_admin.isvalidlistadmin_controller),
-    url(r'api/isvalidadmin', controller_admin.isvalidadmin_controller),
     url(r'api/deleteadmin', controller_admin.deleteadmin_controller),
 
 
