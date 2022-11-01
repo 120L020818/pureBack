@@ -17,9 +17,35 @@ from Crypto.Hash import SHA256
 import time
 from Crypto.Signature import PKCS1_v1_5
 
+import json
+# from http_crypto_helper import HttpCryptoHelper
+from . import http_crypto_helper
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
+
+@csrf_exempt
+def test_controller(request):
+    request_params = json.loads(request.body.decode("utf-8"))
+
+    helper = http_crypto_helper.HttpCryptoHelper()
+
+    request_data = helper.decrypt_request_data(request_params)
+
+    print(request_data)
+
+    return HttpResponse(helper.encrypt_response_data({
+        "success": True,
+        "msg": ""
+    }))
+
 def apply_controller(request):
     print("已收到apply页面的请求")
-    req = json.loads(request.body)
+    request_params = json.loads(request.body.decode("utf-8"))
+    helper = http_crypto_helper.HttpCryptoHelper()
+    req = helper.decrypt_request_data(request_params)
+    print(req)
+
     to_addr1 = req['juridicalperson']
     to_addr2 = req['authority']
     to_addr3 = req['justiceID']
@@ -31,11 +57,9 @@ def apply_controller(request):
 
     li=to_addr7.split(' ')
     to_addr7=li[0]+' '+li[1]+' '+li[2]+'\n'
-    to_addr7+=li[3]+'\n'
-    to_addr7+=li[4]+'\n'
-    to_addr7+=li[5]+'\n'
-    to_addr7+=li[6]+'\n'
-    to_addr7+=li[7]+' '+li[8]+' '+li[9]
+    for i in range(3,len(li)-3):
+        to_addr7+=li[i]+'\n'
+    to_addr7+=li[-3]+' '+li[-2]+' '+li[-1]
 
     userpubk = RSA.import_key(to_addr7)
     print(len(userpubk.exportKey().decode()))
@@ -51,7 +75,7 @@ def apply_controller(request):
     hardcore = serialNumber + expiretime + userpubk.exportKey().decode()  # 代签信息
     hash_object2 = SHA256.new()
     hash_object2.update(hardcore.encode('utf-8'))
-    f = open('adminprivate.pem', 'r')
+    f = open('keys/adminprivate.pem', 'r')
     adminprivk = RSA.import_key(f.read())
 
     signer = PKCS1_v1_5.new(adminprivk)
@@ -68,9 +92,11 @@ def apply_controller(request):
     print(req)
     logger = controller_logger.logger2
     logger.info(f'[申请]:{to_addr1}')
-    return JsonResponse({
+
+    return HttpResponse(helper.encrypt_response_data({
         "success": True,
-    })
+        "msg": ""
+    }))
 
 def download_genrater(request):
     print("success")

@@ -38,6 +38,7 @@ urlpatterns = [
     url(r'api/dlgen', controller_apply.download_genrater),
     url(r'api/dlpro', controller_apply.download_protector),
     url(r'api/apply', controller_apply.apply_controller),
+    url(r'api/demo', controller_apply.test_controller),
 
     url(r'api/cadelete',controller_cadelete.cadelete_controller),
 

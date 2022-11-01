@@ -9,11 +9,16 @@ from django.http import FileResponse
 from vuedata.models import certTable, crlTable
 import django.utils.timezone as timezone
 from . import controller_logger
+from . import http_crypto_helper
+from django.http import HttpResponse
 
 
 def cadelete_controller(request):
     print("已收到cadelete页面的请求")
-    req = json.loads(request.body)
+    request_params = json.loads(request.body.decode("utf-8"))
+    helper = http_crypto_helper.HttpCryptoHelper()
+    req = helper.decrypt_request_data(request_params)
+
     ID = req['SerialNumber']
     username = req['username']
     print(ID)
@@ -33,10 +38,12 @@ def cadelete_controller(request):
     if flag == 1:
         logger = controller_logger.logger2
         logger.info(f'[撤销]:{username}')
-        return JsonResponse({
-            "success": True,
-        })
+        return HttpResponse(helper.encrypt_response_data({
+        "success": True,
+        "msg": ""
+    }))
     else:
-        return JsonResponse({
-            "success": False,
-        })
+        return HttpResponse(helper.encrypt_response_data({
+        "success": False,
+        "msg": ""
+    }))

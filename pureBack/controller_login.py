@@ -15,19 +15,22 @@ def login_controller(request):
     print(username)
     print(password)
     li = list(userTable.objects.filter(UserName=username))
-    flag = 0
+    flag1 = 0
+    flag=0
     isAdmin = False
 
-
-    nPassword=password.encode()
-    prePassword=li[0].Password
+    if len(li) > 0:
+        flag1 = 1
+    if flag1==1:
+        nPassword=password.encode()
+        prePassword=li[0].Password
     # salt=li[0].Salt
 
-    if bcrypt.checkpw(nPassword,prePassword):
-        print("密码正确")
-        flag = 1
-    if username == "admin":
-        isAdmin = True
+        if bcrypt.checkpw(nPassword,prePassword):
+            print("密码正确")
+            flag = 1
+        if username == "admin":
+            isAdmin = True
 
     logger=controller_logger.logger
 

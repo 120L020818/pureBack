@@ -25,7 +25,7 @@ class applyTable(models.Model):
     ChargePerson = models.CharField(max_length=32)
     ChargePhone = models.CharField(max_length=32)
     UserName = models.CharField(max_length=32)
-    PublicKey = models.CharField(max_length=300)
+    PublicKey = models.CharField(max_length=600)
 
 
 class certTable(models.Model):
@@ -38,7 +38,7 @@ class certTable(models.Model):
     ChargePerson = models.CharField(max_length=32)
     ChargePhone = models.CharField(max_length=32)
     UserName = models.CharField(max_length=32)
-    PublicKey = models.CharField(max_length=300)
+    PublicKey = models.CharField(max_length=600)
     CertPathName = models.CharField(max_length=32)
 
 
