@@ -19,6 +19,8 @@ from Crypto.Signature import PKCS1_v1_5
 
 from vuedata.models import applyTable, certTable, crlTable
 from . import controller_logger
+from . import http_crypto_helper
+from django.http import HttpResponse
 
 
 def generate_certificate(request):
@@ -47,7 +49,7 @@ def generate_certificate(request):
     hash_object2 = SHA256.new()
     hash_object2.update(hardcore.encode('utf-8'))
 
-    f = open('adminprivate.pem', 'r')
+    f = open('keys/adminprivate.pem', 'r')
     adminprivk = RSA.import_key(f.read())
 
     signer = PKCS1_v1_5.new(adminprivk)
@@ -65,8 +67,13 @@ def generate_certificate(request):
 
 
 def applyadmin_controller(request):
-    # print("已收到applyadmin页面的请求")
-    # req = json.loads(request.body)
+    print("已收到applyadmin页面的请求")
+
+    request_params = json.loads(request.body.decode("utf-8"))
+    helper = http_crypto_helper.HttpCryptoHelper()
+    req = helper.decrypt_request_data(request_params)
+    print(req)
+
     li = list(applyTable.objects.filter())
     print(li)
     data = []
@@ -77,19 +84,23 @@ def applyadmin_controller(request):
         tempdata['username'] = item.JuridicalPerson
         tempdata['chargename'] = item.ChargePerson
         tempdata['chargephone'] = item.ChargePhone
-        tempdata['expiretime'] = item.EndTime
+        tempdata['expiretime'] = item.EndTime.__str__()
         data.append(tempdata)
-    # print(req)
-    return JsonResponse({
+
+    mydict={"data":data}
+    return HttpResponse(helper.encrypt_response_data({
         "success": True,
-        "data": data
-    })
+        "data": mydict,
+    }))
 
 
 def applyadminpass_controller(request):
     print("已收到applyadminpass请求")
 
-    req = json.loads(request.body)
+    request_params = json.loads(request.body.decode("utf-8"))
+    helper = http_crypto_helper.HttpCryptoHelper()
+    req = helper.decrypt_request_data(request_params)
+    print(req)
     ID = req['ID']
     origin = applyTable.objects.filter(RegistrationNumber=ID)
     li = list(origin)
@@ -113,14 +124,17 @@ def applyadminpass_controller(request):
     origin.delete()
     logger = controller_logger.logger2
     logger.info(f'[通过]:admin')
-    return JsonResponse({
-        "success": True,
-    })
+    return HttpResponse(helper.encrypt_response_data({
+            "success": True,
+        }))
 
 
 def applyadminrefuse_controller(request):
     print("已收到applyadminrefuse请求")
-    req = json.loads(request.body)
+    request_params = json.loads(request.body.decode("utf-8"))
+    helper = http_crypto_helper.HttpCryptoHelper()
+    req = helper.decrypt_request_data(request_params)
+    print(req)
     print(req)
     ID = req['ID']
     print(ID)
@@ -138,6 +152,11 @@ def applyadminrefuse_controller(request):
 
 
 def isvalidlistadmin_controller(request):
+    request_params = json.loads(request.body.decode("utf-8"))
+    helper = http_crypto_helper.HttpCryptoHelper()
+    req = helper.decrypt_request_data(request_params)
+    print(req)
+
     print("已收到isvalidlistadmin请求")
     li = list(certTable.objects.filter())
     print(li)
@@ -149,25 +168,30 @@ def isvalidlistadmin_controller(request):
         tempdata['username'] = item.JuridicalPerson
         tempdata['chargename'] = item.ChargePerson
         tempdata['chargephone'] = item.ChargePhone
-        tempdata['expiretime'] = item.EndTime
+        tempdata['expiretime'] = item.EndTime.__str__()
         data.append(tempdata)
+
+    mydict = {"data": data}
     # print(req)
-    return JsonResponse({
+    return HttpResponse(helper.encrypt_response_data({
         "success": True,
-        "data": data
-    })
+        "data": mydict,
+    }))
 
 def deleteadmin_controller(request):
     print("已收到deleteadmin请求")
-    req = json.loads(request.body)
+    request_params = json.loads(request.body.decode("utf-8"))
+    helper = http_crypto_helper.HttpCryptoHelper()
+    req = helper.decrypt_request_data(request_params)
     ID = req['SerialNumber']
+
     print(ID)
     origin = certTable.objects.filter(SerialNumber=ID)
     li = list(origin)
     flag = 0
     if len(li) > 0:
         flag = 1
-
+    target=''
     if flag == 1:
         target = li[0]
         data = crlTable(SerialNumber=target.SerialNumber, Organization=target.Organization, RevokeTime=timezone.now())
@@ -177,10 +201,11 @@ def deleteadmin_controller(request):
     if flag == 1:
         logger = controller_logger.logger2
         logger.info(f'[撤销]:admin    {target.SerialNumber}')
-        return JsonResponse({
+        return HttpResponse(helper.encrypt_response_data({
             "success": True,
-        })
+        }))
+
     else:
-        return JsonResponse({
+        return HttpResponse(helper.encrypt_response_data({
             "success": False,
-        })
+        }))

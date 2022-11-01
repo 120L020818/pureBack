@@ -2,31 +2,53 @@ import json
 from django.shortcuts import render
 from django.http import JsonResponse
 from vuedata.models import userTable
+from . import http_crypto_helper
+from django.http import HttpResponse
+
 def self_controller(request):
     print('已接收到self页面的请求')
+    request_params = json.loads(request.body.decode("utf-8"))
+    helper = http_crypto_helper.HttpCryptoHelper()
+    req = helper.decrypt_request_data(request_params)
 
-    req = json.loads(request.body)
     username=req['username']
     li = list(userTable.objects.filter(UserName=username))
-    sex = True if(li[0].Sex=='1')else False
-    birthday = li[0].Birthday
-    phone=li[0].Phone
-    email=li[0].Email
-    regDay=li[0].regDay
-    cerHave=True
-    if True:
-        return JsonResponse({
-            "success": True,
-            "username":username,
-            "sex":sex,
-            "birthday":birthday,
-            "phone":phone,
-            "email":email,
-            "regDay":regDay,
-            "cerHave":cerHave,
-        })
-    else :
-        return JsonResponse({
-            "success": False,
-        })
 
+    flag = 0
+    if len(li) > 0:
+        flag = 1
+    sex=''
+    birthday=''
+    phone=''
+    email=''
+    regDay=''
+    cerHave=''
+    if flag==1:
+        sex = True if(li[0].Sex=='1')else False
+        birthday = li[0].Birthday.__str__()
+        phone=li[0].Phone
+        email=li[0].Email
+        regDay=li[0].regDay.__str__()
+        cerHave=True
+    # print(sex,type(sex))
+    # print(birthday,type(birthday))
+    # print(phone,type(phone))
+    # print(email,type(email))
+    # print(regDay,type(regDay))
+    # print(cerHave,type(cerHave))
+    if flag==1:
+        return HttpResponse(helper.encrypt_response_data({
+            "success": True,
+            "username": username,
+            "sex": sex,
+            "birthday": birthday,
+            "phone": phone,
+            "email": email,
+            "regDay": regDay,
+            "cerHave": cerHave,
+        }))
+    else :
+        return HttpResponse(helper.encrypt_response_data({
+            "success": False,
+            "msg": ""
+        }))
