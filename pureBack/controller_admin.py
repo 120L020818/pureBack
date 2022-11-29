@@ -1,11 +1,7 @@
 import json
 import sys
 
-from django.shortcuts import render
 from django.http import JsonResponse
-from vuedata.models import userTable
-from loguru import logger
-from django.http import FileResponse
 import django.utils.timezone as timezone
 
 import base64
@@ -24,7 +20,10 @@ from django.http import HttpResponse
 
 
 def generate_certificate(request):
-    req = json.loads(request.body)
+    request_params = json.loads(request.body.decode("utf-8"))
+    helper = http_crypto_helper.HttpCryptoHelper()
+    req = helper.decrypt_request_data(request_params)
+
     ID = req['ID']
     origin = applyTable.objects.filter(RegistrationNumber=ID)
     li = list(origin)
@@ -34,11 +33,8 @@ def generate_certificate(request):
 
     userpubk = RSA.import_key(target.PublicKey)
 
-    print(type(target.StartTime))
     nowtime = target.StartTime.strftime("%Y-%m-%d")
-    print(nowtime)
     expiretime =target.EndTime.strftime("%Y-%m-%d")
-    print(expiretime)
 
     justicenumber = target.RegistrationNumber
 
@@ -72,10 +68,8 @@ def applyadmin_controller(request):
     request_params = json.loads(request.body.decode("utf-8"))
     helper = http_crypto_helper.HttpCryptoHelper()
     req = helper.decrypt_request_data(request_params)
-    print(req)
 
     li = list(applyTable.objects.filter())
-    print(li)
     data = []
     for item in li:
         tempdata = {}
@@ -100,7 +94,6 @@ def applyadminpass_controller(request):
     request_params = json.loads(request.body.decode("utf-8"))
     helper = http_crypto_helper.HttpCryptoHelper()
     req = helper.decrypt_request_data(request_params)
-    print(req)
     ID = req['ID']
     origin = applyTable.objects.filter(RegistrationNumber=ID)
     li = list(origin)

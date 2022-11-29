@@ -1,6 +1,5 @@
 import json
-from django.shortcuts import render
-from django.http import JsonResponse
+
 from . import http_crypto_helper
 from vuedata.models import certTable
 from django.http import HttpResponse
