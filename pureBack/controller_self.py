@@ -7,8 +7,14 @@ from django.http import HttpResponse
 def self_controller(request):
     print('已接收到self页面的请求')
     request_params = json.loads(request.body.decode("utf-8"))
+    req = 0
     helper = http_crypto_helper.HttpCryptoHelper()
-    req = helper.decrypt_request_data(request_params)
+    print(request_params)
+    flag1 = 0
+    if helper.dec_vrfy_data(request_params):
+        request_params_data = request_params['data']
+        req = helper.decrypt_request_data(request_params_data)
+        flag1 = 1
 
     username=req['username']
     li = list(userTable.objects.filter(UserName=username))
@@ -35,7 +41,7 @@ def self_controller(request):
     # print(email,type(email))
     # print(regDay,type(regDay))
     # print(cerHave,type(cerHave))
-    if flag==1:
+    if flag==1 and flag1==1:
         return HttpResponse(helper.encrypt_response_data({
             "success": True,
             "username": username,

@@ -23,9 +23,12 @@ from . import controller_download
 from . import controller_isvalid
 from . import controller_cadelete
 from . import controller_admin
+from . import controller_test
 
 urlpatterns = [
     # url(r'api/login', allpages.login_controller)
+
+    url(r'api/test', controller_test.test_controller),
 
     url(r'api/applyadmin', controller_admin.applyadmin_controller),
     url(r'api/applypass', controller_admin.applyadminpass_controller),
@@ -43,6 +46,8 @@ urlpatterns = [
     url(r'api/cadelete',controller_cadelete.cadelete_controller),
 
     url(r'api/download',controller_download.download_controller),
+    url(r'api/email',controller_download.email_controller),
+    url(r'api/isava',controller_download.isava_controller),
 
     url(r'api/isvalid',controller_isvalid.isvalid_controller),
 

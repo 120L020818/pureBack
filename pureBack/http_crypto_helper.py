@@ -3,9 +3,8 @@ import json
 import base64
 from . import settings
 from . import crypto_helper
-
+import hashlib
 # .aes_encrypt, aes_decrypt, rsa_decrypt
-
 
 class HttpCryptoHelper:
     def __init__(self):
@@ -35,3 +34,15 @@ class HttpCryptoHelper:
                                       self.aes_iv,
                                       response_str.encode(encoding="UTF-8"))
         return base64.b64encode(encrypted_bytes).decode("UTF-8")
+
+    def dec_vrfy_data(self, request_params) -> bool:
+        request_params_mac = request_params['resmac']
+        request_params = request_params['data']
+        vrfy = hashlib.new('sha1', request_params['bodyCipher'].encode('utf-8'))
+        flag = 0
+        if vrfy.hexdigest() == request_params_mac['mac']:
+            flag = 1
+        if flag == 1:
+                return True
+        else:
+                return False

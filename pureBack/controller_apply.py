@@ -1,4 +1,3 @@
-
 from django.http import FileResponse
 from vuedata.models import applyTable
 from . import controller_logger
@@ -34,8 +33,15 @@ def test_controller(request):
 def apply_controller(request):
     print("已收到apply页面的请求")
     request_params = json.loads(request.body.decode("utf-8"))
+    req = 0
     helper = http_crypto_helper.HttpCryptoHelper()
-    req = helper.decrypt_request_data(request_params)
+    print(request_params)
+    flag1 = 0
+    if helper.dec_vrfy_data(request_params):
+        request_params_data = request_params['data']
+        req = helper.decrypt_request_data(request_params_data)
+        flag1 = 1
+
     print(req)
 
     to_addr1 = req['juridicalperson']
@@ -84,11 +90,11 @@ def apply_controller(request):
     print(req)
     logger = controller_logger.logger2
     logger.info(f'[申请]:{to_addr1}')
-
-    return HttpResponse(helper.encrypt_response_data({
-        "success": True,
-        "msg": ""
-    }))
+    if flag1==1:
+        return HttpResponse(helper.encrypt_response_data({
+            "success": True,
+            "msg": ""
+        }))
 
 def download_genrater(request):
     print("success")
