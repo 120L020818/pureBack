@@ -24,9 +24,15 @@ from . import controller_isvalid
 from . import controller_cadelete
 from . import controller_admin
 from . import controller_test
+from . import controller_bank
 
 urlpatterns = [
-    # url(r'api/login', allpages.login_controller)
+    # url(r'api/login', allpages.login_controller),
+
+    url(r'api/bank',controller_bank.bank_controller),
+    url(r'api/vrfy',controller_bank.vrfy_controller),
+    url(r'api/blog',controller_bank.log_controller),
+    url(r'api/ret',controller_bank.ret_controller),
 
     url(r'api/test', controller_test.test_controller),
 
@@ -35,8 +41,6 @@ urlpatterns = [
     url(r'api/applyrefuse', controller_admin.applyadminrefuse_controller),
     url(r'api/isvalidlistadmin', controller_admin.isvalidlistadmin_controller),
     url(r'api/deleteadmin', controller_admin.deleteadmin_controller),
-
-
 
     url(r'api/dlgen', controller_apply.download_genrater),
     url(r'api/dlpro', controller_apply.download_protector),
@@ -50,6 +54,8 @@ urlpatterns = [
     url(r'api/isava',controller_download.isava_controller),
 
     url(r'api/isvalid',controller_isvalid.isvalid_controller),
+    # 用于电商验证
+    url(r'api/nomac',controller_isvalid.nomac_controller),
 
     url(r'api/login', controller_login.login_controller),
     url(r'api/logout', controller_login.login_out),
@@ -60,4 +66,5 @@ urlpatterns = [
     url(r'api/self', controller_self.self_controller),
 
     url(r'api/request', controller_request.request_controller),
+    url(r'api/noreq', controller_request.nomac_controller),
 ]

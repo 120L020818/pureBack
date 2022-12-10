@@ -9,7 +9,6 @@ from Crypto.Hash import SHA256
 import base64
 from Crypto.Signature import PKCS1_v1_5
 
-
 def isava_controller(request):
     print("已收到isava页面的请求")
     request_params = json.loads(request.body.decode("utf-8"))
@@ -62,7 +61,9 @@ def email_controller(request):
         logger = controller_logger.logger2
         logger.info(f'[信封传输]:{username}')
         try:
-            with open(ID + '.json', 'r', encoding='utf-8') as f:
+            # f = open(f'certificate/{ID}.json', 'rb')
+            # with open(ID + '.json', 'r', encoding='utf-8') as f:
+            with open(f'certificate/{ID}.json', 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 print(f"正常获得证书,证书是:{data}")
         except Exception as e:
@@ -94,18 +95,19 @@ def email_controller(request):
             result = base64.b64encode(signature)
             result = result.decode('utf-8')
 
-            data = {'Serial Number': serialNumber, 'Skyrim CA System': 'www.Skyrim.com',
-                    'Sign Algorithm': 'sha256+RSA', 'Valid Time From': nowtime,
-                    'Valid Time to': expiretime,
-                    'User': User, 'User Publickey': userpubk.export_key().decode(),
-                    'Sign': result}
+            data = {'serialNumber': serialNumber, 'skyrimCASystem': 'www.Skyrim.com',
+                    'signAlgorithm': 'sha256+RSA', 'validTimeFrom': nowtime,
+                    'validTimeto': expiretime,
+                    'user': User, 'userPublickey': userpubk.export_key().decode(),
+                    'sign': result}
             print(f"初次生成证书,证书是:{data}")
-            f3 = open(serialNumber + '.json', 'w', encoding='utf-8', newline='')
+            f3 = open(f'certificate/{serialNumber}.json', 'rb')
+            # f3 = open( + '.json', 'w', encoding='utf-8', newline='')
             json.dump(data, f3)
 
-    return HttpResponse(helper.encrypt_response_data({
-        "certificate": data,
-    }))
+    return HttpResponse(helper.encrypt_response_data(
+        data
+    ))
 
 
 def download_controller(request):
@@ -130,7 +132,8 @@ def download_controller(request):
         logger = controller_logger.logger2
         logger.info(f'[下载]:{username}')
         try:
-            f = open(ID + '.json', 'rb')
+            f = open(f'certificate/{ID}.json', 'rb')
+            # f = open(ID + '.json', 'rb')
         except Exception as e:
             origin = certTable.objects.filter(SerialNumber=ID)
             li = list(origin)
@@ -160,14 +163,17 @@ def download_controller(request):
             result = base64.b64encode(signature)
             result = result.decode('utf-8')
 
-            data = {'Serial Number': serialNumber, 'Skyrim CA System': 'www.Skyrim.com',
-                    'Sign Algorithm': 'sha256+RSA', 'Valid Time From': nowtime,
-                    'Valid Time to': expiretime,
-                    'User': User, 'User Publickey': userpubk.export_key().decode(),
-                    'Sign': result}
-            f3 = open(serialNumber + '.json', 'w', encoding='utf-8', newline='')
+            data = {'serialNumber': serialNumber, 'skyrimCASystem': 'www.Skyrim.com',
+                    'signAlgorithm': 'sha256+RSA', 'validTimeFrom': nowtime,
+                    'validTimeto': expiretime,
+                    'user': User, 'userPublickey': userpubk.export_key().decode(),
+                    'sign': result}
+            print(f"初次生成证书,证书是:{data}")
+            f3 = open(f'certificate/{ID}.json', 'w', encoding='utf-8', newline='')
             json.dump(data, f3)
-            f = open(ID + '.json', 'rb')
+
+            f = open(f'certificate/{ID}.json', 'rb')
+            # f = open(ID + '.json', 'rb')
 
         response = FileResponse(f)
         # response['Content-Type'] = 'application/octet-stream'
