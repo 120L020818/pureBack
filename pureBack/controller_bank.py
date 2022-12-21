@@ -40,27 +40,6 @@ def bank_controller(request):
     }
     with open("cache/temp.json", 'w', encoding='utf-8', newline='') as f:
         json.dump(mydata, f)
-    # print(aes_key)
-    # print(pi)
-    # print(oimd)
-    # print(ds)
-    # pi_username = base64.b64encode(pi['userName'].encode())
-    # pi_username=pi['userName'].encode()
-    # pi_account = base64.b64encode(pi['account'].encode())
-    # print(pi_username)
-    # print(pi_account)
-    # real_data=base64.b64encode(pi_username)
-    # decrypt_aes = AES.new(aes_key, AES.MODE_CBC, aes_key)
-    # dec_username=unpad(decrypt_aes.decrypt(pi_username), AES.block_size)
-    # dec_username = decrypt_aes.decrypt(pi_username).decode('utf-8')
-    # dec_account = decrypt_aes.decrypt(pi_account).decode('utf-8')
-    # print(dec_username)
-    # print(dec_account)
-    # print(str(aes_key))
-    # print(aes_key.decode('utf-8'))
-    # vrfy=PKCS1_v1_5.new(key)
-    # hasher=hashlib.sha256()
-    # result=vrfy.verify(hasher,signature='')
 
     print(req)
     # res=requests.post(url='http://192.168.0.102:8080/test',
@@ -114,13 +93,15 @@ def log_controller(request):
 
 
 def ret_controller(request):
-    print("已接收到res页面的请求")
+    print("已接收到ret页面的请求")
     request_params = json.loads(request.body.decode("utf-8"))
     helper = http_crypto_helper.HttpCryptoHelper()
     req = helper.decrypt_request_data(request_params)
-    with open("cache/temp.json", 'r', encoding='utf-8') as f:
+    with open("cache/result.json", 'r', encoding='utf-8') as f:
         mydata = json.load(f)
+        print(mydata)
+        print(mydata['verified'])
         return HttpResponse(helper.encrypt_response_data({
             "success": True,
-            "mydata": mydata
+            "mydata": mydata['verified']
         }))

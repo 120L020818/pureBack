@@ -17,7 +17,7 @@ def isvalid_controller(request):
         request_params_data = request_params['data']
         req = helper.decrypt_request_data(request_params_data)
         flag1 = 1
-
+    print(req)
     ID=req['SerialNumber']
     username=req['username']
     print(ID)
@@ -47,7 +47,7 @@ def nomac_controller(request):
     helper = http_crypto_helper.HttpCryptoHelper()
     req = helper.decrypt_request_data(request_params)
     print(req)
-    ID=req['SerialNumber']
+    ID=req['serialNumber']
     # username=req['username']
     print(ID)
     li = list(certTable.objects.filter(SerialNumber=ID))
@@ -60,12 +60,12 @@ def nomac_controller(request):
         # logger.info(f'[查询]:{username}')
 
         return HttpResponse(helper.encrypt_response_data({
-            "success": True,
+            "success": 'true',
         }))
     else :
         logger = controller_logger.logger2
         # logger.info(f'[查询失败]:{username}')
         return HttpResponse(helper.encrypt_response_data({
-            "success": False,
+            "success": 'false',
         }))
 

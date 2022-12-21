@@ -9,6 +9,7 @@ from Crypto.Hash import SHA256
 import base64
 from Crypto.Signature import PKCS1_v1_5
 
+
 def isava_controller(request):
     print("已收到isava页面的请求")
     request_params = json.loads(request.body.decode("utf-8"))
@@ -56,7 +57,7 @@ def email_controller(request):
     flag = 0
     if (len(li) > 0):
         flag = 1
-    data=''
+    data = ''
     if flag == 1 and flag1 == 1:
         logger = controller_logger.logger2
         logger.info(f'[信封传输]:{username}')
@@ -74,6 +75,7 @@ def email_controller(request):
             User = target.UserName
 
             userpubk = RSA.import_key(target.PublicKey)
+            print(userpubk.exportKey())
 
             nowtime = target.StartTime.strftime("%Y-%m-%d")
             expiretime = target.EndTime.strftime("%Y-%m-%d")
@@ -101,12 +103,14 @@ def email_controller(request):
                     'user': User, 'userPublickey': userpubk.export_key().decode(),
                     'sign': result}
             print(f"初次生成证书,证书是:{data}")
-            f3 = open(f'certificate/{serialNumber}.json', 'rb')
+            f3 = open(f'certificate/{serialNumber}.json', 'w')
             # f3 = open( + '.json', 'w', encoding='utf-8', newline='')
             json.dump(data, f3)
 
     return HttpResponse(helper.encrypt_response_data(
-        data
+        {"success": True,
+         "mydata": data
+         }
     ))
 
 
